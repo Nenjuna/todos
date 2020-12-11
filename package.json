@@ -1,0 +1,26 @@
+{
+  "name": "todos",
+  "version": "1.0.0",
+  "description": "A simple todo list",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Nenjuna/todos.git"
+  },
+  "keywords": [
+    "todos"
+  ],
+  "author": "Arjun",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Nenjuna/todos/issues"
+  },
+  "homepage": "https://github.com/Nenjuna/todos#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
