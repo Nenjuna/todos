@@ -4,22 +4,40 @@ const todoButton = document.querySelector('.todo-button');
 const todoList = document.querySelector('.todo-list');
 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+const search = document.querySelector('#search');
+const searchres = document.querySelector('#search-res');
+const times = ['Asia/Kolkata'];
 
 
-fetch('./timezone.json', { 
-  method: 'GET'
-})
-.then(function(response) { return response.json(); })
-.then(function(json) {
-  // console.log(json)
-  var tzs = json['TimeZones']
-  // console.log(tzs)
-  // use the json
-});
+
+const searchTimeZones = async searchText =>{
+  const res = await fetch('./timezone.json');
+  const zones = await res.json();
+
+  //get matched timezones
+
+  let matches = zones['TimeZones'].filter(zone => {
+    const regex = new RegExp(`${searchText}`, 'gi');
+    return zone.match(regex)
+  })
+
+  if(searchText.length ===0 || matches.length === 0){
+    matches = []
+    searchres.innerHTML = ""
+  }
+  
+  
+  // console.log(matches)
+
+  outputHtml(matches, searchText);
+  // console.log(matches);
+}
 
 //Event Listeners
 todoButton.addEventListener('click',addTodo);
 todoList.addEventListener('click',deleteCheck);
+search.addEventListener('input', () => searchTimeZones(search.value));
+// searchres.addEventListener('click',pushtime(e))
 
 //Functions
 
@@ -102,21 +120,47 @@ function checkTime(i) {
     s = checkTime(s);
     return `<div class='card'><div class='timer'>${h} :  ${m} : ${s}
     </div> <div class='day'>${day} , ${date} ${month}  ${year}</div><div class='after'>${zone}</div>`;
-    // document.getElementById('time').innerHTML = `<div class='card'>${h} :  ${m} : ${s}<\div>`;
-    // document.getElementById('time').innerHTML = h + ":" + m + ":" + s;
-    
-    // setTimeout(function() {
-    //   startTime(zone)
-    // }, 500);
+  
   }
-  // startTime('Asia/Kolkata');
-
   
 
-setInterval(()=>{
-  document.getElementById('card1').innerHTML = startTime('Asia/Kolkata');
-  document.getElementById('card2').innerHTML = startTime('Europe/London');
-  document.getElementById('card3').innerHTML = startTime('Europe/Budapest');
-  document.getElementById('card4').innerHTML = startTime('Europe/Luxembourg');
-  }, 500); 
 
+
+ const outputHtml = (matches,searchText) =>{
+   if(matches.length>0){
+     const tz = matches.map(
+       match => `<div class='timezones'>${match}</div>`
+     ).join('')
+     searchres.innerHTML = tz;
+
+   }else if(searchText.length > 0){
+      searchres.innerHTML = `<div class='timezones'>No Timezones Found</div>`
+     }
+    
+ }
+
+ searchres.addEventListener('click', (e)=>{
+  let zone = e.target.innerText;
+  times.push(zone)
+  matches = []
+  searchres.innerHTML = ""
+ })
+
+
+
+ function displaytimes(timezones){
+   let tzs = ''
+
+  for(let i = timezones.length -1; i>=0; i--){
+    timezone = timezones[i]
+    tzs += startTime(timezone)
+  }
+
+  document.getElementById('time').innerHTML = tzs;
+ }
+
+ setInterval(()=>{
+
+  displaytimes(times);
+
+ },500)
